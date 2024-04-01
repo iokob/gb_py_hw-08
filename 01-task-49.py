@@ -68,11 +68,11 @@ def write_new_file(filename, lst):
 Дополнить справочник возможностью копирования данных из одного файла в другой. 
 Пользователь вводит номер строки, которую необходимо перенести из одного файла в другой.
 '''
-def copy_line(file_name, line_num):
+def copy_line(file_name, line_num, output_filename=new_file_name):
     file_lst = read_file(file_name)
     for i in range(len(file_lst)):
         if i == int(line_num-1):
-            write_new_file(new_file_name, file_lst[i])
+            write_new_file(output_filename, file_lst[i])
     
 
 
