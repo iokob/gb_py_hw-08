@@ -19,9 +19,9 @@ from csv import DictWriter, DictReader
 from os.path import exists
 from tempfile import NamedTemporaryFile
 import shutil
-tempfile = NamedTemporaryFile('w+t', newline='', delete=False)
 
 file_name = 'phone.csv'
+new_file_name = 'copy.csv'
 
 def get_info(first_name="Ivan", last_name="Ivanov"):
     flag = False
@@ -46,28 +46,34 @@ def read_file(filename):
     with open(filename, 'r', encoding='utf-8') as data:
         f_r = DictReader(data)
         return list(f_r)
+    
+def standart_write(filename, lst):
+    with open(filename, 'w', encoding='utf-8', newline='') as data:
+        f_w = DictWriter(data, fieldnames=['Имя', 'Фамилия', 'Телефон'])
+        f_w.writeheader()
+        f_w.writerows(lst)
 
 def write_file(filename, lst):
     res = read_file(filename)
     obj = {"Имя": lst[0], "Фамилия": lst[1], "Телефон": lst[2]}
     res.append(obj)
-    with open(filename, 'w', encoding='utf-8', newline='') as data:
-        f_w = DictWriter(data, fieldnames=['Имя', 'Фамилия', 'Телефон'])
-        f_w.writeheader()
-        f_w.writerows(res)
+    standart_write(filename, res)
+
+def write_new_file(filename, lst):
+    res = read_file(filename)
+    res.append(lst)
+    standart_write(filename, res)
 
 '''
 Дополнить справочник возможностью копирования данных из одного файла в другой. 
 Пользователь вводит номер строки, которую необходимо перенести из одного файла в другой.
 '''
 def copy_line(file_name, line_num):
-    with open(file_name,'r', encoding='utf-8', newline='') as firstfile, open(input("Имя файла назначения: "),'a', encoding='utf-8', newline='') as secondfile: 
-        count = 0
-        for line in firstfile: 
-            if count == int(line_num):
-                secondfile.write(line)
-                return
-            count += 1
+    file_lst = read_file(file_name)
+    for i in range(len(file_lst)):
+        if i == int(line_num-1):
+            write_new_file(new_file_name, file_lst[i])
+    
 
 
 def delete_item_from_file(file_name, item):
@@ -90,7 +96,7 @@ def main():
                 continue
             print(*read_file(file_name))
         elif command == 'c':
-            if not exists(file_name):
-                create_file(file_name)
-            copy_line(file_name, input("Введите существующий номер строки: "))
+            if not exists(new_file_name):
+                create_file(new_file_name)
+            copy_line(file_name, 1)
 main()
